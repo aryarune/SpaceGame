@@ -49,15 +49,15 @@ function pan()
 	{
 		targetCamPos.x += 15;
 	}
-	else if(keyIsDown(68) && targetCamPos.x > -width*5 && mainCamera.rightBound < width*5)
+	else if(keyIsDown(68) && targetCamPos.x > -width*8 && mainCamera.rightBound < width*8)
 	{
 		targetCamPos.x -= 15;
 	}
-	if(keyIsDown(87))
+	if(keyIsDown(87) && targetCamPos.y < height*5 && mainCamera.topBound > -height*5)
 	{
 		targetCamPos.y += 15;
 	}
-	else if(keyIsDown(83))
+	else if(keyIsDown(83) && targetCamPos.y > -height*5 && mainCamera.bottomBound < height*5)
 	{
 		targetCamPos.y -= 15;
 	}

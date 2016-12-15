@@ -3,9 +3,14 @@ function Planet(par, id) {
 	this.id = id;
 	this.radius = min(this.par.radius - 10, random(18, 50));
 	this.distance = this.par.radius*2.5 + this.radius + (400 * id) + random(130, 300);
+	this.orbitw = this.distance*1.8;
+	this.orbith = this.distance*1.2;
 	this.angle = random(0, TWO_PI);
-	this.speed = random(radians(0.05), radians(0.1));
+	this.speed = random(radians(0.05), radians(0.3));
 	this.pos = createVector(this.par.pos.x + this.distance * sin(this.angle), this.par.pos.y - this.distance * cos(this.angle));
+	this.focus = createVector(this.par.pos.x, this.par.pos.y);
+	this.focusDelta = this.orbitw * random(0.4, 0.45);
+	this.focus.x += this.focusDelta;
 	
 	this.onScreen = true;
 	this.selected = false;
@@ -88,7 +93,7 @@ function Planet(par, id) {
 			noFill();
 			strokeWeight(1);
 			stroke(255,255,255,100);
-			ellipse(this.par.pos.x, this.par.pos.y, this.distance * 2, this.distance * 2);
+			ellipse(this.focus.x, this.focus.y, this.orbitw*2, this.orbith*2);
 			
 			if(this.onScreen)
 			{
@@ -175,7 +180,7 @@ function Planet(par, id) {
 		{
 			if(this.selected)
 			{
-				cam.setScale(1);
+				cam.setScale(width/(this.radius*15));
 			}
 			this.selected = true;
 		} 
@@ -187,9 +192,15 @@ function Planet(par, id) {
 
 	this.checkSelected = function(cam) 
 	{
+		this.focus.x = this.par.pos.x;
+		this.focus.y = this.par.pos.y;
+		
+		this.focus.x += this.focusDelta;
+		
+		
 		this.angle += this.speed;
-		this.pos.x = this.par.pos.x + this.distance * sin(this.angle);
-		this.pos.y = this.par.pos.y - this.distance * cos(this.angle);
+		this.pos.x = this.focus.x + this.orbitw * sin(this.angle);
+		this.pos.y = this.focus.y + this.orbith * cos(this.angle);
 		if(mode === "Star System")
 		{
 			if (this.pos.x > cam.leftBound - this.radius && this.pos.y > cam.topBound - this.radius && this.pos.x < cam.rightBound + this.radius && this.pos.y < cam.bottomBound + this.radius) {
