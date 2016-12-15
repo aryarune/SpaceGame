@@ -2,23 +2,23 @@ function Moon(par)
 {
 	
 	this.par = par;
-	this.radius = min(par.radius - 10, random(4, 15));
-	this.distance = this.par.radius + this.radius + random(5, 20);
+	this.radius = min(par.radius / 4, random(2, 15));
+	this.distance = this.par.radius + this.radius + random(35, 80);
 	this.angle = random(0, TWO_PI);
-	this.speed = random(PI/128, PI/64);
+	this.speed = random(radians(0.5), radians(4)) * par.moonDirection;
 	this.pos = createVector(this.par.pos.x + this.distance * sin(this.angle), this.par.pos.y - this.distance * cos(this.angle));
 	
 	this.r = random(150, 250);
 	this.g = random(150, 250);
 	this.b = random(150, 250);
-	this.a = 255;
+
 	
 	this.onScreen = true;
 	
 	
 	this.show = function()
 	{
-		fill(this.r, this.g, this.b, this.a);
+		fill(this.r, this.g, this.b, 100);
 		noStroke();
 		ellipse(this.pos.x, this.pos.y, this.radius*2, this.radius*2);
 		

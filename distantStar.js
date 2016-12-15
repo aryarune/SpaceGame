@@ -12,14 +12,16 @@ function distantStar(pos)
 	{
 		if(this.onScreen)
 		{
+			
 			strokeWeight(2);
 			stroke(this.r, this.g, this.b, this.a);
 			point(this.pos.x, this.pos.y);
+			
 		}
 	}
 	this.checkOnScreen = function(cam)
 	{
-		if(cam.scaleValue > 0.3 && this.pos.x > cam.leftBound && this.pos.y > cam.topBound && this.pos.x < cam.rightBound && this.pos.y < cam.bottomBound)
+		if(this.pos.x > cam.leftBound && this.pos.y > cam.topBound && this.pos.x < cam.rightBound && this.pos.y < cam.bottomBound)
 		{
 			this.onScreen = true;
 		}

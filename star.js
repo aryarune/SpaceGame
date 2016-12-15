@@ -2,14 +2,17 @@ function Star(pos)
 {
 	this.pos = pos;
 	this.radius = random(120, 200);
-	this.r = random(120, 250);
-	this.g = random(120, 250);
-	this.b = random(120, 250);
+	this.r = min(random(0, 250) * 7, 255);
+	this.g = min(random(0, 250) * 7, 255);
+	this.b = min(random(0, 250) * 7, 255);
 	this.a = 255;
 	this.onScreen = true;
 	this.selected = false;
 	this.planets = [];
-
+	this.name = "S";
+	this.name += int(random(355009));
+	
+	
 	var numMoons = int(random(4, 9));
 	for (var i = 0; i < numMoons; i++) {
 		var planet = new Planet(this, i);
@@ -41,8 +44,26 @@ function Star(pos)
 	this.show = function() {
 		if(mode === "Star System")
 		{
+			
 			if(this.onScreen)
 			{
+				if(this.selected)
+				{
+					noStroke();
+					fill(255,255,255,100);
+					rectMode(CENTER)
+					rect(this.pos.x, this.pos.y + this.radius+21, 18*this.name.length, 23);
+					
+					fill(255);
+					noStroke();
+					textSize(30);
+					textAlign(CENTER);
+					text(this.name, this.pos.x, this.pos.y + this.radius + 32);
+					
+					
+					
+				}
+				
 				fill(this.r, this.g, this.b, 15);
 				noStroke();
 				ellipse(width/2, height/2, this.radius*5, this.radius*5);

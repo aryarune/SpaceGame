@@ -19,61 +19,10 @@ function setup()
 	sun = new Star(createVector(width/2, height/2));
 	mode = "Star System";
 	selectedStar = sun;
-	//var numPlanets = int(random(10,54));
-	// for(var i = 0 ; i < numPlanets; i++)
-	// {
-	// 	var planetPos;
-	// 	var ready = false;
-	// 	var numTries = 0;
-	// 	var makePlanet = true;
-	// 	do
-	// 	{
-	// 		planetPos = createVector(random(-width, width), random(-height, height));
-	// 		if(planets.length === 0)
-	// 		{
-	// 			ready = true;
-	// 		}
-	// 		else
-	// 		{
-	// 			ready = true;
-	// 			for(var j = 0; j < planets.length; j++)
-	// 			{
-	// 				if(planetPos.dist(planets[j].pos) < 150)
-	// 				{
-	// 					ready = false;
-	// 					j  = planets.length;
-	// 				}
-	// 			}
-	// 		}
-	// 		numTries++;
-	// 		if(numTries > 10 && ready === false)
-	// 		{
-	// 			ready = true;
-	// 			makePlanet = false;
-	// 		}
-	// 	}while(!ready);
-	// 	if(makePlanet)
-	// 	{
-	// 		var planet = new Planet(planetPos);
-	// 		if(planets.length > 0)
-	// 		{
-	// 			var l = new planetLine(planet, planets[planets.length-1]);
-	// 			planetLines.push(l);
-	// 		}
-			
-	// 		planets.push(planet);
-			
-			
-	// 	}
-	// 	else
-	// 	{
-	// 		break;
-	// 	}
-	// }
-	
-	for(i = 0; i < 5500; i++)
+
+	for(i = 0; i < 8500; i++)
 	{
-		var star = new distantStar(createVector(random(-width*5, width*5), random(-height*5, height*5)));
+		var star = new distantStar(createVector(random(-width*6, width*6), random(-height*8, height*8)));
 		distantStars.push(star);
 		
 	}
@@ -96,11 +45,11 @@ function mouseClicked()
 
 function pan()
 {
-	if(keyIsDown(65))
+	if(keyIsDown(65) && targetCamPos.x < width*5 && mainCamera.leftBound > -width*5)
 	{
 		targetCamPos.x += 15;
 	}
-	else if(keyIsDown(68))
+	else if(keyIsDown(68) && targetCamPos.x > -width*5 && mainCamera.rightBound < width*5)
 	{
 		targetCamPos.x -= 15;
 	}
@@ -120,6 +69,10 @@ function pan()
 	{
 		mainCamera.setScale(max(mainCamera.scaleValue * 0.99, 0.1));
 	}
+	else if(keyIsDown(70))
+	{
+		mainCamera.setScale(1);
+	}
 	
 }
 	
@@ -127,21 +80,31 @@ function pan()
 
 function draw() {
   background(0);
-  translate(0,0);
+ // translate(0,0);
   
-  
+ 
  
   
   translate(mainCamera.tVal.x, mainCamera.tVal.y);
  //scale(1);
   scale(mainCamera.scaleValue);
   
+  for(i = 0; i < distantStars.length; i++)
+  {
+  	if(mainCamera.scaleValue > 0.3)
+  	{
+  		distantStars[i].checkOnScreen(mainCamera);
+  		distantStars[i].show();
+  	}
+  }
+  
+  
   cameraPos = cameraPos.lerp(targetCamPos, 0.07);
   
   mainCamera.translatePosition(cameraPos);
   
   
-  mainCamera.show();
+  //mainCamera.show();
   pan();
   if(shootingStars.length > 0 && shootingStars[0].len === 0)
   {
@@ -149,11 +112,7 @@ function draw() {
   }
   
   
-  for(i = 0; i < distantStars.length; i++)
-  {
-  	distantStars[i].checkOnScreen(mainCamera);
-  	distantStars[i].show();
-  }
+  
   for(i = 0; i < shootingStars.length; i++)
   {
   	shootingStars[i].show();
@@ -188,8 +147,8 @@ function draw() {
   	selectedStar.show();
   }
   
-  fill(255);
-  ellipse(-mainCamera.tVal.x*(1/mainCamera.scaleValue)  + width/(2.0 * mainCamera.scaleValue),-mainCamera.tVal.y*(1/mainCamera.scaleValue) + height/(2.0 * mainCamera.scaleValue), 5, 5);
+  //fill(255);
+  //ellipse(-mainCamera.tVal.x*(1/mainCamera.scaleValue)  + width/(2.0 * mainCamera.scaleValue),-mainCamera.tVal.y*(1/mainCamera.scaleValue) + height/(2.0 * mainCamera.scaleValue), 5, 5);
   
   nextShootingStar--;
   if(nextShootingStar <= 0)
