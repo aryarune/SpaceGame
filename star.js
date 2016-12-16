@@ -13,7 +13,7 @@ function Star(pos)
 	this.name += int(random(355009));
 	
 	
-	var numMoons = int(random(4, 9));
+	var numMoons = int(random(1, 2));
 	for (var i = 0; i < numMoons; i++) {
 		var planet = new Planet(this, i);
 		this.planets.push(planet);

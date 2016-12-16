@@ -8,10 +8,12 @@ function Moon(par)
 	this.orbith = this.distance*0.6;
 	
 	this.angle = random(0, TWO_PI);
-	this.speed = random(radians(1), radians(3)) * par.moonDirection;
+	this.speed = random(radians(1), radians(1.4)) * par.moonDirection;
 	this.pos = createVector(this.par.pos.x + this.distance * sin(this.angle), this.par.pos.y - this.distance * cos(this.angle));
 	this.focus = createVector(this.par.pos.x, this.par.pos.y);
 	
+	
+	this.maxDistance = dist(this.focus.x, this.focus.y, this.focus.x + this.orbitw * sin(radians(90)), this.focus.y + this.orbith * cos(radians(90)));
 	if(this.orbitw > this.orbith)
 	{
 		this.focusDelta = this.orbitw * 0.4;
@@ -51,7 +53,18 @@ function Moon(par)
 		{
 			this.focus.y += this.focusDelta;
 		}
-		this.angle += this.speed;
+		
+		var addedSpeed = 0;
+		if(degrees(this.angle) >= 0 && degrees(this.angle) <= 180)
+		{
+			addedSpeed = 1.5 * (abs(cos(this.angle)) + 1);
+		}
+		else
+		{
+			addedSpeed = 3 * (abs(sin(this.angle)) + 1);
+		}
+		this.angle += this.speed + radians(addedSpeed)*par.moonDirection * timeScale;
+		this.angle = radians(degrees(this.angle) % 360);
 		this.pos.x = this.focus.x + this.orbitw * sin(this.angle);
 		this.pos.y = this.focus.y + this.orbith * cos(this.angle);
 		

@@ -11,10 +11,13 @@ var selectedStar;
 var camSize;
 var mainCamera;
 
+var timeScale;
+
 function setup()
 {
 	//randomSeed(5);//second());
   	createCanvas(1024, 720);
+  	timeScale = 0.5;
 	nextShootingStar = random(10, 20);
 	sun = new Star(createVector(width/2, height/2));
 	mode = "Star System";

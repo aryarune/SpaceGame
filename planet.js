@@ -79,7 +79,7 @@ function Planet(par, id) {
 	
 	
 
-	var numMoons = int(random(0, 4));
+	var numMoons = int(random(1, 4));
 	for (var i = 0; i < numMoons; i++) {
 		var moon = new Moon(this);
 		this.moons.push(moon);
@@ -198,7 +198,8 @@ function Planet(par, id) {
 		this.focus.x += this.focusDelta;
 		
 		
-		this.angle += this.speed;
+		this.angle += this.speed * timeScale;
+		this.angle = radians(degrees(this.angle) % 360);
 		this.pos.x = this.focus.x + this.orbitw * sin(this.angle);
 		this.pos.y = this.focus.y + this.orbith * cos(this.angle);
 		if(mode === "Star System")
