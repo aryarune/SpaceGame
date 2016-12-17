@@ -9,11 +9,10 @@ function Star(pos)
 	this.onScreen = true;
 	this.selected = false;
 	this.planets = [];
-	this.name = "S";
-	this.name += int(random(355009));
+	this.name = letters[int(random(26))];
+	this.name += int(random(2000));
 	
-	
-	var numMoons = int(random(1, 2));
+	var numMoons = int(random(3, 21));
 	for (var i = 0; i < numMoons; i++) {
 		var planet = new Planet(this, i);
 		this.planets.push(planet);

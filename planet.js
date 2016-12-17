@@ -79,7 +79,7 @@ function Planet(par, id) {
 	
 	
 
-	var numMoons = int(random(1, 4));
+	var numMoons = int(random(1, 21));
 	for (var i = 0; i < numMoons; i++) {
 		var moon = new Moon(this);
 		this.moons.push(moon);

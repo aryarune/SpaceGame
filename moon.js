@@ -63,7 +63,7 @@ function Moon(par)
 		{
 			addedSpeed = 3 * (abs(sin(this.angle)) + 1);
 		}
-		this.angle += this.speed + radians(addedSpeed)*par.moonDirection * timeScale;
+		this.angle += max(radians(0.5), this.speed + radians(addedSpeed)*par.moonDirection) * timeScale;
 		this.angle = radians(degrees(this.angle) % 360);
 		this.pos.x = this.focus.x + this.orbitw * sin(this.angle);
 		this.pos.y = this.focus.y + this.orbith * cos(this.angle);

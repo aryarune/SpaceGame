@@ -10,19 +10,24 @@ var mode;
 var selectedStar;
 var camSize;
 var mainCamera;
-
+var timeSlider;
 var timeScale;
+
+var letters = [];
 
 function setup()
 {
 	//randomSeed(5);//second());
+	
   	createCanvas(1024, 720);
   	timeScale = 0.5;
+  	letters ="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 	nextShootingStar = random(10, 20);
 	sun = new Star(createVector(width/2, height/2));
 	mode = "Star System";
 	selectedStar = sun;
-
+	timeSlider = createSlider(0, 4, 0.5, 0.05);
+	
 	for(i = 0; i < 8500; i++)
 	{
 		var star = new distantStar(createVector(random(-width*6, width*6), random(-height*8, height*8)));
@@ -33,7 +38,7 @@ function setup()
 	mainCamera = new Camera();
 	targetCamPos = createVector(mainCamera.tVal.x, mainCamera.tVal.y);
 	cameraPos = createVector(mainCamera.tVal.x, mainCamera.tVal.y);
-	mainCamera.setScale(1);
+	mainCamera.setScale(0.5);
 	//planets[0].selected = true;
 }
 
@@ -48,19 +53,19 @@ function mouseClicked()
 
 function pan()
 {
-	if(keyIsDown(65) && targetCamPos.x < width*5 && mainCamera.leftBound > -width*5)
+	if(keyIsDown(65) && targetCamPos.x < width*15 && mainCamera.leftBound > -width*15)
 	{
 		targetCamPos.x += 15;
 	}
-	else if(keyIsDown(68) && targetCamPos.x > -width*8 && mainCamera.rightBound < width*8)
+	else if(keyIsDown(68) && targetCamPos.x > -width*15 && mainCamera.rightBound < width*15)
 	{
 		targetCamPos.x -= 15;
 	}
-	if(keyIsDown(87) && targetCamPos.y < height*5 && mainCamera.topBound > -height*5)
+	if(keyIsDown(87) && targetCamPos.y < height*15 && mainCamera.topBound > -height*15)
 	{
 		targetCamPos.y += 15;
 	}
-	else if(keyIsDown(83) && targetCamPos.y > -height*5 && mainCamera.bottomBound < height*5)
+	else if(keyIsDown(83) && targetCamPos.y > -height*15 && mainCamera.bottomBound < height*15)
 	{
 		targetCamPos.y -= 15;
 	}
@@ -70,7 +75,7 @@ function pan()
 	}
 	else if(keyIsDown(81))
 	{
-		mainCamera.setScale(max(mainCamera.scaleValue * 0.99, 0.1));
+		mainCamera.setScale(max(mainCamera.scaleValue * 0.99, 0.01));
 	}
 	else if(keyIsDown(70))
 	{
@@ -84,9 +89,9 @@ function pan()
 function draw() {
   background(0);
  // translate(0,0);
-  
+   
  
- 
+ 	timeScale = timeSlider.value();
   
   translate(mainCamera.tVal.x, mainCamera.tVal.y);
  //scale(1);
@@ -102,7 +107,7 @@ function draw() {
   }
   
   
-  cameraPos = cameraPos.lerp(targetCamPos, 0.07);
+  cameraPos = cameraPos.lerp(targetCamPos, 0.8);
   
   mainCamera.translatePosition(cameraPos);
   
