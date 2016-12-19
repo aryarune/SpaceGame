@@ -13,17 +13,20 @@ function Ring(par)
 	{
 		noFill();
 		stroke(this.r, this.g, this.b, 200);
-		strokeWeight(2);
 		
-		
-		ellipse(this.par.pos.x,this.par.pos.y, this.w, this.h);
-		
-		
-		
-		this.angle += radians(this.speed);
-		this.angle = this.angle % radians(360);
+		if(mode == "Star System")
+		{
+			strokeWeight(2);
+			ellipse(this.par.pos.x,this.par.pos.y, this.w, this.h);
+			//this.angle += radians(this.speed);
+			//this.angle = this.angle % radians(360);
+		}
+		else if(mode == "Planetary View")
+		{
+			strokeWeight(4);
+			ellipse(width/2,height/2, this.w*4, this.h*4);
+			//this.angle += radians(this.speed);
+			//this.angle = this.angle % radians(360);
+		}
 	}
-	
-	
-	
 }

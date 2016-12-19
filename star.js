@@ -11,7 +11,7 @@ function Star(pos)
 	this.planets = [];
 	this.name = letters[int(random(26))];
 	this.name += int(random(2000));
-	
+	randomSeed(this.pos.x * this.pos.y);
 	var numMoons = int(random(3, 21));
 	for (var i = 0; i < numMoons; i++) {
 		var planet = new Planet(this, i);
@@ -22,7 +22,15 @@ function Star(pos)
 		var mx = (1/cam.scaleValue)*(mouseX) + cam.leftBound;
 		var my = (1/cam.scaleValue)*(mouseY) + cam.topBound;
 		
-		if (abs(mx - this.pos.x) < this.radius && abs(my - this.pos.y) < this.radius) 
+		if (mode == "Constellation" && abs(mx - this.pos.x) < this.radius && abs(my - this.pos.y) < this.radius) 
+		{
+			if(this.selected)
+			{
+				cam.setScale(1);
+			}
+			this.selected = true;
+		} 
+		else if (mode == "Star System" && abs(mx - width/2) < this.radius && abs(my - height/2) < this.radius) 
 		{
 			if(this.selected)
 			{
@@ -92,28 +100,79 @@ function Star(pos)
 	}
 
 	this.checkSelected = function(cam) {
-		if (this.pos.x > cam.leftBound - this.radius*2.5 && this.pos.y > cam.topBound - this.radius*2.5 && this.pos.x < cam.rightBound + this.radius*2.5 && this.pos.y < cam.bottomBound + this.radius*2.5) {
-			this.onScreen = true;
-		} 
-		else 
+		if(mode == "Star System")
 		{
-			this.onScreen = false;
+			if (this.pos.x > cam.leftBound - this.radius*2.5 && this.pos.y > cam.topBound - this.radius*2.5 && this.pos.x < cam.rightBound + this.radius*2.5 && this.pos.y < cam.bottomBound + this.radius*2.5) {
+				this.onScreen = true;
+			} 
+			else 
+			{
+				this.onScreen = false;
+			}
 		}
-		
 		for (var i = 0; i < this.planets.length; i++)
 		{
-			if(this.planets[i].checkSelected(mainCamera))
+			if(mode == "Star System" &&this.planets[i].checkSelected(mainCamera))
 		  	{
 		  		targetCamPos.x = width/2 - this.planets[i].pos.x*mainCamera.scaleValue;
   				targetCamPos.y = height/2 - this.planets[i].pos.y*mainCamera.scaleValue;
+		  	}
+		  	if(mode == "Planetary View" && this.planets[i].checkSelected(mainCamera))
+		  	{
+		  		targetCamPos.x = width/2 - width/2*mainCamera.scaleValue;
+  				targetCamPos.y = height/2 - height/2*mainCamera.scaleValue;
 		  	}
 		}
 		
 		return this.selected;
 	}
 	
-	
-	
-	
-	
+	this.keyInput = function(code)
+	{
+		
+		var selectedPlanet = null;
+		if(code == 13)
+		{
+			
+			for(var i = 0; i < this.planets.length; i++)
+			{
+				if(this.planets[i].selected)
+				{
+					console.log(code);
+					selectedPlanet = this.planets[i];
+				}
+			}
+			if(selectedPlanet != null)
+			{
+				for(var i = this.planets.length-1; i >= 0; i--)
+				{
+					if(this.planets[i] != selectedPlanet)
+					{
+						this.planets.splice(i, 1);
+					}
+				}
+				
+				selectedPlanet.setPlanetaryView();
+				mainCamera.setScale(2);
+				mode = "Planetary View";
+			}
+		}
+		
+		if(code == 32)
+		{
+			selectedPlanet = null;
+			this.planets = [];
+			mainCamera.setScale(0.5);
+			targetCamPos.x = width/2 - width/2*mainCamera.scaleValue;
+			targetCamPos.y = height/2 - height/2*mainCamera.scaleValue;
+			randomSeed(this.pos.x * this.pos.y);
+			var numMoons = int(random(3, 21));
+			for (var i = 0; i < numMoons; i++) {
+				var planet = new Planet(this, i);
+				this.planets.push(planet);
+			}
+			
+			mode = "Star System";
+		}
+	}
 }

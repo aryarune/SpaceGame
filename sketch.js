@@ -1,6 +1,6 @@
 var distantStars = [];
 var shootingStars = [];
- var nextShootingStar;
+var nextShootingStar;
 // var planets = [];
 // var planetLines = [];
 var cameraPos;
@@ -50,7 +50,13 @@ function mouseClicked()
 	}
 	
 }
-
+function keyPressed()
+{
+	
+	selectedStar.keyInput(keyCode);
+	
+	
+}
 function pan()
 {
 	if(keyIsDown(65) && targetCamPos.x < width*15 && mainCamera.leftBound > -width*15)
@@ -144,8 +150,8 @@ function draw() {
   //	}
   //}
   
-  if(mode === "Star System")
-  {
+  //if(mode === "Star System")
+  //{
   	if(selectedStar.checkSelected(mainCamera))
   	{
   		targetCamPos.x = width/2 - selectedStar.pos.x*mainCamera.scaleValue;
@@ -153,7 +159,7 @@ function draw() {
   	}
 	  
   	selectedStar.show();
-  }
+  //}
   
   //fill(255);
   //ellipse(-mainCamera.tVal.x*(1/mainCamera.scaleValue)  + width/(2.0 * mainCamera.scaleValue),-mainCamera.tVal.y*(1/mainCamera.scaleValue) + height/(2.0 * mainCamera.scaleValue), 5, 5);
@@ -168,25 +174,4 @@ function draw() {
   
 }
 
-// function planetLine(p1, p2)
-// {
-// 	this.x1 = p1.pos.x;
-// 	this.x2 = p2.pos.x;
-// 	this.y1 = p1.pos.y;
-// 	this.y2 = p2.pos.y;
-	
-// 	this.show = function()
-// 	{
-// 		var thickness = dist(this.x1, this.y1, this.x2, this.y2);
-// 		thickness /= 100.0;
-// 		thickness = 1.0/thickness;
-// 		var a = map(thickness, 0, 1, 0, 255);
-		
-// 		stroke(255,255,255, a);
-		
-		
-// 		line(this.x1,this.y1,this.x2,this.y2);
-		
-// 	}
-// }
 

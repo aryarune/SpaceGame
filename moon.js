@@ -1,14 +1,14 @@
-function Moon(par)
+function Moon(par, id)
 {
-	
+	this.id = id;
 	this.par = par;
-	this.radius = min(par.radius / 4, random(2, 15));
-	this.distance = this.par.radius + this.radius + random(35, 80);
-	this.orbitw = this.distance*1.2;
-	this.orbith = this.distance*0.6;
+	this.radius = min(par.radius / 12, random(1, 8));
+	this.distance = this.par.radius + this.radius + 8 + id*3 + random(-1.0, 1.0);
+	this.orbitw = this.distance*1.6;
+	this.orbith = this.distance*1;
 	
 	this.angle = random(0, TWO_PI);
-	this.speed = random(radians(1), radians(1.4)) * par.moonDirection;
+	this.speed = par.speed * (10/id+1) * this.par.moonDirection;
 	this.pos = createVector(this.par.pos.x + this.distance * sin(this.angle), this.par.pos.y - this.distance * cos(this.angle));
 	this.focus = createVector(this.par.pos.x, this.par.pos.y);
 	
@@ -32,28 +32,70 @@ function Moon(par)
 	
 	this.onScreen = true;
 	
-	
-	this.show = function()
+	this.setPlanetaryView = function()
 	{
-		fill(this.r, this.g, this.b, 100);
-		noStroke();
-		ellipse(this.pos.x, this.pos.y, this.radius*2, this.radius*2);
-		
-	}
-	
-	this.update = function(cam)
-	{
-		this.focus.x = this.par.pos.x;
-		this.focus.y = this.par.pos.y;
+		this.orbitw = this.distance*4.8;
+		this.orbith = this.distance*2.4;
 		if(this.orbitw > this.orbith)
 		{
+			this.focusDelta = this.orbitw * 1.6;
 			this.focus.x += this.focusDelta;
 		}
 		else
 		{
+			this.focusDelta = this.orbith * 1.6;
 			this.focus.y += this.focusDelta;
 		}
+	}
+	this.show = function()
+	{
 		
+		
+		noStroke();
+		if(mode == "Star System")
+		{
+			fill(this.r, this.g, this.b, 100);
+			ellipse(this.pos.x, this.pos.y, this.radius*2, this.radius*2);
+		}
+		else if(mode == "Planetary View")
+		{
+			fill(this.r, this.g, this.b, 255);
+			ellipse(this.pos.x, this.pos.y, this.radius*8, this.radius*8);
+		}
+	}
+	
+	this.update = function(cam)
+	{
+		var multiplier = 1;
+		if(mode == "Star System")
+		{
+			this.focus.x = this.par.pos.x;
+			this.focus.y = this.par.pos.y;
+			if(this.orbitw > this.orbith)
+			{
+				this.focus.x += this.focusDelta;
+			}
+			else
+			{
+				this.focus.y += this.focusDelta;
+			}
+		}
+		else if(mode == "Planetary View")
+		{
+			multiplier = 4;
+			this.focus.x = width/2;
+			this.focus.y = width/2;
+			if(this.orbitw > this.orbith)
+			{
+				this.focusDelta = this.orbitw * 1.2;
+				this.focus.x += this.focusDelta;
+			}
+			else
+			{
+				this.focusDelta = this.orbith * 1.2;
+				this.focus.y += this.focusDelta;
+			}
+		}
 		var addedSpeed = 0;
 		if(degrees(this.angle) >= 0 && degrees(this.angle) <= 180)
 		{
@@ -63,19 +105,17 @@ function Moon(par)
 		{
 			addedSpeed = 3 * (abs(sin(this.angle)) + 1);
 		}
-		this.angle += max(radians(0.5), this.speed + radians(addedSpeed)*par.moonDirection) * timeScale;
+		this.angle += max(radians(0.05), this.speed + radians(addedSpeed)*this.par.moonDirection) * timeScale;
 		this.angle = radians(degrees(this.angle) % 360);
-		this.pos.x = this.focus.x + this.orbitw * sin(this.angle);
-		this.pos.y = this.focus.y + this.orbith * cos(this.angle);
+		
+		
+		this.pos.x = this.focus.x + this.orbitw * multiplier * sin(this.angle);
+		this.pos.y = this.focus.y + this.orbith * multiplier * cos(this.angle);
 		
 		if (this.pos.x > cam.leftBound - this.radius && this.pos.y > cam.topBound - this.radius && this.pos.x < cam.rightBound + this.radius && this.pos.y < cam.bottomBound + this.radius) {
 			this.onScreen = true;
 		}
 		else
 			this.onScreen = false;
-		
 	}
-	
-	
-	
 }
