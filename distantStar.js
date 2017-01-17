@@ -13,7 +13,7 @@ function distantStar(pos)
 		if(this.onScreen)
 		{
 			
-			strokeWeight(2);
+			strokeWeight(0.5);
 			stroke(this.r, this.g, this.b, this.a);
 			point(this.pos.x, this.pos.y);
 			
@@ -21,14 +21,15 @@ function distantStar(pos)
 	}
 	this.checkOnScreen = function(cam)
 	{
-		if(this.pos.x > cam.leftBound && this.pos.y > cam.topBound && this.pos.x < cam.rightBound && this.pos.y < cam.bottomBound)
-		{
-			this.onScreen = true;
-		}
-		else
-		{
-			this.onScreen = false;
-		}
+		this.onScreen = true;
+		// if(this.pos.x > cam.leftBound && this.pos.y > cam.topBound && this.pos.x < cam.rightBound && this.pos.y < cam.bottomBound)
+		// {
+		// 	this.onScreen = true;
+		// }
+		// else
+		// {
+		// 	this.onScreen = false;
+		// }
 	}
 	
 }

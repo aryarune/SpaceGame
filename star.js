@@ -1,7 +1,8 @@
 function Star(pos)
 {
+	this.numLines = 0;
 	this.pos = pos;
-	this.radius = random(120, 200);
+	this.radius = random(80, 600);
 	this.r = min(random(0, 250) * 7, 255);
 	this.g = min(random(0, 250) * 7, 255);
 	this.b = min(random(0, 250) * 7, 255);
@@ -11,18 +12,20 @@ function Star(pos)
 	this.planets = [];
 	this.name = letters[int(random(26))];
 	this.name += int(random(2000));
-	randomSeed(this.pos.x * this.pos.y);
-	var numMoons = int(random(3, 21));
-	for (var i = 0; i < numMoons; i++) {
-		var planet = new Planet(this, i);
-		this.planets.push(planet);
-	}
+	this.sectorX = 0;
+	this.sectorY = 0;
+	// randomSeed(this.pos.x * this.pos.y);
+	// var numPlanets = 10;//int(random(3, 21));
+	// for (var i = 0; i < numPlanets; i++) {
+	// 	var planet = new Planet(this, i);
+	// 	this.planets.push(planet);
+	// }
 	this.select = function(cam)
 	{
 		var mx = (1/cam.scaleValue)*(mouseX) + cam.leftBound;
 		var my = (1/cam.scaleValue)*(mouseY) + cam.topBound;
 		
-		if (mode == "Constellation" && abs(mx - this.pos.x) < this.radius && abs(my - this.pos.y) < this.radius) 
+		if (mode == "Constellation View" && abs(mx - this.pos.x) < this.radius*0.1 && abs(my - this.pos.y) < this.radius*0.1) 
 		{
 			if(this.selected)
 			{
@@ -59,13 +62,13 @@ function Star(pos)
 					noStroke();
 					fill(255,255,255,100);
 					rectMode(CENTER)
-					rect(this.pos.x, this.pos.y + this.radius+21, 18*this.name.length, 23);
+					rect(width/2, height/2 + this.radius+31, 18*this.name.length, 23);
 					
 					fill(255);
 					noStroke();
 					textSize(30);
 					textAlign(CENTER);
-					text(this.name, this.pos.x, this.pos.y + this.radius + 32);
+					text(this.name, width/2, height/2 + this.radius + 42);
 					
 					
 					
@@ -93,16 +96,77 @@ function Star(pos)
 				ellipse(width/2, height/2, this.radius*2, this.radius*2);
 				
 			}
-		}
-		for (var i = 0; i < this.planets.length; i++) {
+			for (var i = 0; i < this.planets.length; i++) {
 				this.planets[i].show();
+			}
 		}
+		else if(mode == "Planetary View")
+		{
+			for (var i = 0; i < this.planets.length; i++) {
+				this.planets[i].show();
+			}
+		}
+		else if(mode == "Constellation View")
+		{
+			if(this.onScreen)
+			{
+				if(this.selected)
+				{
+					noStroke();
+					fill(255,255,255,100);
+					rectMode(CENTER)
+					rect(this.pos.x, this.pos.y + this.radius*0.2, 18*this.name.length, 23);
+					
+					fill(255);
+					noStroke();
+					textSize(25);
+					textAlign(CENTER);
+					text(this.name, this.pos.x, this.pos.y + this.radius*0.2 + 8);
+					
+					
+					
+				}
+				if (this.selected) {
+					stroke(255);
+					strokeWeight(4);
+				} else {
+					noStroke();
+				}
+				// fill(this.r, this.g, this.b, 15);
+				// noStroke();
+				// ellipse(this.pos.x, this.pos.y, this.radius, this.radius);
+			
+				// fill(this.r, this.g, this.b, 20);
+			
+				// ellipse(this.pos.x, this.pos.y, this.radius*0.8, this.radius*0.8);
+				
+				// fill(this.r, this.g, this.b, 40);
+			
+				// ellipse(this.pos.x, this.pos.y, this.radius/2, this.radius/2);
+				
+				fill(this.r, this.g, this.b, this.a);
+				
+				ellipse(this.pos.x, this.pos.y, this.radius*0.1, this.radius*0.1);
+				
+			}
+		}
+		
 	}
 
 	this.checkSelected = function(cam) {
 		if(mode == "Star System")
 		{
-			if (this.pos.x > cam.leftBound - this.radius*2.5 && this.pos.y > cam.topBound - this.radius*2.5 && this.pos.x < cam.rightBound + this.radius*2.5 && this.pos.y < cam.bottomBound + this.radius*2.5) {
+			if (width/2 > cam.leftBound - this.radius*2.5 && height/2 > cam.topBound - this.radius*2.5 && width/2 < cam.rightBound + this.radius*2.5 && height/2 < cam.bottomBound + this.radius*2.5) {
+				this.onScreen = true;
+			} 
+			else 
+			{
+				this.onScreen = false;
+			}
+		}
+		else if(mode == "Constellation View")
+		{
+			if (this.pos.x > cam.leftBound - this.radius*0.2 && this.pos.y > cam.topBound - this.radius*0.2 && this.pos.x < cam.rightBound + this.radius*0.2 && this.pos.y < cam.bottomBound + this.radius*0.2) {
 				this.onScreen = true;
 			} 
 			else 
@@ -158,21 +222,28 @@ function Star(pos)
 			}
 		}
 		
-		if(code == 32)
+		if(code == 32 && mode == "Planetary View")
 		{
-			selectedPlanet = null;
-			this.planets = [];
-			mainCamera.setScale(0.5);
-			targetCamPos.x = width/2 - width/2*mainCamera.scaleValue;
-			targetCamPos.y = height/2 - height/2*mainCamera.scaleValue;
-			randomSeed(this.pos.x * this.pos.y);
-			var numMoons = int(random(3, 21));
-			for (var i = 0; i < numMoons; i++) {
-				var planet = new Planet(this, i);
-				this.planets.push(planet);
-			}
-			
-			mode = "Star System";
+			this.setStarSystemView();
 		}
+		
+	}
+	
+	
+	this.setStarSystemView = function()
+	{
+		selectedPlanet = null;
+		this.planets = [];
+		mainCamera.setScale(0.5);
+		targetCamPos.x = width/2 - width/2*mainCamera.scaleValue;
+		targetCamPos.y = height/2 - height/2*mainCamera.scaleValue;
+		randomSeed(this.pos.x * this.pos.y);
+		var numMoons = 10;//int(random(3, 21));
+		for (var i = 0; i < numMoons; i++) {
+			var planet = new Planet(this, i);
+			this.planets.push(planet);
+		}
+		
+		mode = "Star System";
 	}
 }

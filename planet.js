@@ -7,9 +7,10 @@ function Planet(par, id) {
 	this.orbith = this.distance*1.2;
 	this.angle = random(0, TWO_PI);
 	this.speed = radians(0.1 / (id+1));
-	this.pos = createVector(this.par.pos.x + this.distance * sin(this.angle), this.par.pos.y - this.distance * cos(this.angle));
-	this.focus = createVector(this.par.pos.x, this.par.pos.y);
-	this.focusDelta = this.orbitw * random(0.4, 0.45);
+	
+	this.focus = createVector(width/2, height/2);
+	this.pos = createVector(this.focus.x + this.distance * sin(this.angle), this.focus.y - this.distance * cos(this.angle));
+	this.focusDelta = this.orbitw * 0.4;
 	this.focus.x += this.focusDelta;
 	
 	this.onScreen = true;
@@ -79,7 +80,7 @@ function Planet(par, id) {
 	
 	
 
-	var numMoons = int(random(1, 21));
+	var numMoons = 10;//int(random(1, 21));
 	for (var i = 0; i < numMoons; i++) {
 		var moon = new Moon(this,i);
 		this.moons.push(moon);
@@ -248,8 +249,8 @@ function Planet(par, id) {
 	}
 	this.checkSelected = function(cam) 
 	{
-		this.focus.x = this.par.pos.x;
-		this.focus.y = this.par.pos.y;
+		this.focus.x = width/2;
+		this.focus.y = height/2;
 		
 		this.focus.x += this.focusDelta;
 		
