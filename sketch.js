@@ -6,6 +6,7 @@ var targetCamPos;
 var sun;
 var mode;
 var currentConstellation;
+var currentGalaxy;
 var camSize;
 var mainCamera;
 var timeSlider;
@@ -19,12 +20,13 @@ function setup()
 	
   	createCanvas(1024, 768);
   	
-  	timeScale = 0.5;
+  	timeScale = 1;
   	letters ="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 	nextShootingStar = random(10, 20);
 	mode = "Constellation View";
-	currentConstellation = new Constellation();
-	currentConstellation.setConstellationView();
+	currentGalaxy = new Galaxy();
+	currentGalaxy.generateClusters();
+	mode = "Galaxy View";
 	//timeSlider = createSlider(0, 4, 0.5, 0.05);
 	
 	for(i = 0; i < 500; i++)
@@ -48,7 +50,7 @@ function mouseClicked()
 {
 	if(mouseButton == LEFT)
 	{
-		currentConstellation.select(mainCamera);
+		currentGalaxy.select();
 	}
 	
 }
@@ -58,31 +60,31 @@ function keyPressed()
 	{
 		fullscreen(!fullscreen());
 	}
-	currentConstellation.keyInput(keyCode);
+	currentGalaxy.keyInput(keyCode);
 	
 	
 }
 function pan()
 {
-	if(keyIsDown(65) && targetCamPos.x*mainCamera.scaleValue < width*12 && mainCamera.leftBound > -width*12)
+	if(keyIsDown(65) && mainCamera.leftBound > -width*7.1)
 	{
 		targetCamPos.x += 20;
 		//if(mode == "Constellation View")
 		//currentConstellation.updateConstellations("left");
 	}
-	else if(keyIsDown(68) && targetCamPos.x *mainCamera.scaleValue> -width*10 && mainCamera.rightBound < width*10)
+	else if(keyIsDown(68) && mainCamera.rightBound < width*8.1)
 	{
 		targetCamPos.x -= 20;
 		//if(mode == "Constellation View")
 		//currentConstellation.updateConstellations("right");
 	}
-	if(keyIsDown(87) && targetCamPos.y*mainCamera.scaleValue < height*10 && mainCamera.topBound > -height*10)
+	if(keyIsDown(87) && mainCamera.topBound > -height*7.1)
 	{
 		targetCamPos.y += 15;
 		//if(mode == "Constellation View")
 		//currentConstellation.updateConstellations("up");
 	}
-	else if(keyIsDown(83)  && targetCamPos.y*mainCamera.scaleValue > -height*10 && mainCamera.bottomBound < height*10)
+	else if(keyIsDown(83)  && mainCamera.bottomBound < height*8.1)
 	{
 		targetCamPos.y -= 15;
 		//if(mode == "Constellation View")
@@ -139,7 +141,7 @@ function draw() {
   
   mainCamera.translatePosition(cameraPos);
   
-  currentConstellation.show();
+  currentGalaxy.show();
   //mainCamera.show();
   pan();
   if(shootingStars.length > 0 && shootingStars[0].len === 0)

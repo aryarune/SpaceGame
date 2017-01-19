@@ -2,29 +2,51 @@ function Constellation()
 {
 	this.stars = [];
 	this.lines = [];
-	var numStars = 300;
+	var numStars = 200;
 	this.starCount = 0;
-	this.pos = createVector(random(-width,width), random(-height/height));
+	this.pos = createVector(0, 0);
 	this.xSector = 0;
 	this.ySector = 0;
 	this.curveVertices = [];
-	this.w = random(250,500);
-	this.h = random(250,500);
+	this.w = random(50,100);
+	this.h = random(50,100);
+	this.selected = false;
+	this.onScreen = true;
+	
 	this.show = function()
 	{
 		if(mode == "Galaxy View")
 		{
-			fill(255,255,255, 10);
-			noStroke();
-			rect(this.pos.x-this.w/2, this.pos.y-this.h/2, this.w,this.h, 30);
-			
-			randomSeed(this.pos.x * this.pos.y);
-			for(var i = 0; i < this.w/20 + this.h/20; i++)
+			if(this.pos.x >= mainCamera.leftBound - this.w/2 && this.pos.x <= mainCamera.rightBound + this.w/2
+				&& this.pos.y >= mainCamera.topBound - this.h/2 && this.pos.y <= mainCamera.bottomBound + this.h/2)
 			{
-				fill(random(200,255), random(200,255), random(200,255), random(220,255));
-				var sizeOfStar = random(2,11);
-				ellipse(random(this.pos.x-this.w/2,this.pos.x+this.w/2), random(this.pos.y-this.h/2,this.pos.y+this.h/2), sizeOfStar, sizeOfStar);
+				this.onScreen = true;
 			}
+			else
+			{
+				this.onScreen = false;
+			}
+			
+			if(this.onScreen)
+			{
+				fill(255,255,255, 10);
+				noStroke();
+				if(this.selected)
+				{
+					stroke(255);
+				}
+				
+				rect(this.pos.x-this.w/2, this.pos.y-this.h/2, this.w,this.h, 30);
+				noStroke();
+				randomSeed(this.pos.x * this.pos.y);
+				for(var i = 0; i < this.w/20 + this.h/20; i++)
+				{
+					fill(random(200,255), random(200,255), random(200,255), random(220,255));
+					var sizeOfStar = random(1,5);
+					ellipse(random(this.pos.x-this.w/2,this.pos.x+this.w/2), random(this.pos.y-this.h/2,this.pos.y+this.h/2), sizeOfStar, sizeOfStar);
+				}
+			}
+			
 		}
 		if(mode == "Constellation View")
 		{
@@ -62,15 +84,41 @@ function Constellation()
 	}
 	this.select = function()
 	{
-		for(var i = 0; i < this.stars.length; i++)
+		if(mode == "Galaxy View")
 		{
-			this.stars[i].select(mainCamera);
+			var mx = (1/mainCamera.scaleValue)*(mouseX) + mainCamera.leftBound;
+			var my = (1/mainCamera.scaleValue)*(mouseY) + mainCamera.topBound;
+			if (abs(mx - this.pos.x) <= this.w/2 && abs(my - this.pos.y) <= this.h/2) 
+			{
+				if(this.selected)
+				{
+					mainCamera.setScale(1);
+				}
+				this.selected = true;
+				targetCamPos.x = width/2 - this.pos.x*mainCamera.scaleValue;
+  				targetCamPos.y = height/2 - this.pos.y*mainCamera.scaleValue;
+  				return true;
+			} 
+			else
+			{
+				this.selected = false;
+				return false;
+			}
+			
+			
+		}
+		else
+		{
+			for(var i = 0; i < this.stars.length; i++)
+			{
+				this.stars[i].select(mainCamera);
+			}
+			return false;
 		}
 	}
 
 	this.keyInput = function(code)
 	{
-		
 		
 		if(mode == "Constellation View")
 		{
@@ -98,16 +146,8 @@ function Constellation()
 			}
 			else if(code == 32)
 			{
-				selectedStar = null;
-				this.stars = [];
-				this.lines = [];
-				
-				mainCamera.setScale(0.5);
-				targetCamPos.x = width/2 - width/2*mainCamera.scaleValue;
-				targetCamPos.y = height/2 - height/2*mainCamera.scaleValue;
 				
 				
-				mode = "Galaxy View";
 			}
 			
 		}
@@ -183,10 +223,6 @@ function Constellation()
 		this.generateSector(0,1); //down1-center
 		this.generateSector(-1,1); //down1-left1
 		this.generateSector(1,1); //down1-right1
-		
-		this.generateSector(0,2); //down2-center
-		this.generateSector(-1,2); //down2-left1
-		this.generateSector(1,2); //down2-right1
 		
 		this.generateSector(0,-1); //up1-center
 		this.generateSector(-1,-1); //up1-left1
