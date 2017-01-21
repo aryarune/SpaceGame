@@ -1,12 +1,15 @@
 function Planet(par, id) {
 	this.par = par;
 	this.id = id;
-	this.radius = min(this.par.radius - 10, random(18, 50));
-	this.distance = this.par.radius*2.5 + this.radius + (400 * id) + random(130, 300);
+	this.radius = min(this.par.radius - 10, random(18, 100));
+	this.distance = this.par.radius*2.5 + this.radius + (800 * (id+1)) + random(130, 300);
 	this.orbitw = this.distance*1.8;
 	this.orbith = this.distance*1.2;
 	this.angle = random(0, TWO_PI);
 	this.speed = radians(0.1 / (id+1));
+	
+	this.massPower = 24;
+	
 	
 	this.focus = createVector(width/2, height/2);
 	this.pos = createVector(this.focus.x + this.distance * sin(this.angle), this.focus.y - this.distance * cos(this.angle));
@@ -23,13 +26,15 @@ function Planet(par, id) {
 	{
 		this.moonDirection = 1;
 	}
-	
-	this.planetType = int(random(3)) //0 = rocky with atmosphere, 1 = gas planet with no rings, 2 = gas planet with rings
-	if(this.planetType === 0)
+	this.density = random(20000,40000) - this.distance;
+	this.planetType = int(random(5)) //0 = rocky with atmosphere, 1 = gas planet with no rings, 2 = gas planet with rings, 3 = gas giant, 4 = dwarf planet
+	if(this.planetType == 0 || this.planetType == 4)
 	{
 		this.r = random(20, 150);
 		this.g = random(10, 100);
 		this.b = random(20, 150);
+		
+		
 	}
 	else
 	{
@@ -58,14 +63,21 @@ function Planet(par, id) {
 			this.hasRing = true;
 			this.ring = new Ring(this);
 		}
-			
+		if(this.planetType == 3)
+		{
+			this.radius = min(this.radius * random(5,10), this.par.radius/5);
+		}
+		if(this.planetType == 4)
+		{
+			this.radius = max(this.radius / random(15.0,20.0), 2);
+		}
 	}
-	this.name = par.name;
-	this.name += ":P";
+	this.name = "";
+	this.name += "P";
 	this.name += id;
 	this.name += "-";
-	this.name += int(this.distance);
-	if(this.planetType === 0)
+	//this.name += int(this.distance);
+	if(this.planetType === 0 || this.planetType == 4)
 	{
 		this.name+="R";
 	}
@@ -73,29 +85,43 @@ function Planet(par, id) {
 	{
 		this.name+="G";
 	}
+	if(this.planetType == 3)
+	{
+		this.name+="g";
+	}
+	if(this.planetType == 4)
+	{
+		this.name+="d";
+	}
 	if(this.hasRing)
 	{
 		this.name+="r";
 	}
-	
+	var volume = 4/3 * 3.1415 * pow(this.radius*80000,3);
+	this.mass = volume * this.density / pow(10,24);
 	
 
-	var numMoons = 10;//int(random(1, 21));
+	var numMoons = int(random(0, 40));
 	for (var i = 0; i < numMoons; i++) {
 		var moon = new Moon(this,i);
 		this.moons.push(moon);
 	}
 	
+	this.lastSelectedTimer = 0.1;
 		
 	this.show = function() {
 		
 		if(mode === "Star System")
 		{
 			noFill();
-			strokeWeight(1);
-			stroke(255,255,255,100);
+			strokeWeight(5);
+			stroke(255,255,255,255);
+			if(this.selected)
+			{
+				stroke(255,255,0,255);
+			}
 			ellipse(this.focus.x, this.focus.y, this.orbitw*2, this.orbith*2);
-			
+			strokeWeight(1);
 			if(this.onScreen)
 			{
 				if(this.selected)
@@ -106,7 +132,7 @@ function Planet(par, id) {
 					text(this.name, this.pos.x, this.pos.y + this.radius + 22);
 				}
 				
-				if(this.planetType === 0)
+				if(this.planetType === 0 || this.planetType == 4)
 				{
 					if (this.selected) {
 					stroke(255);
@@ -156,15 +182,18 @@ function Planet(par, id) {
 		{
 			if(this.onScreen)
 			{
-				if(this.selected)
-				{
+				//if(this.selected)
+				//{
 					fill(255);
 					textSize(12);
 					textAlign(CENTER);
-					text(this.name, width/2, height/2 + this.radius*4 + 22);
-				}
+					text(this.name, width/2, height/2 + this.radius + 22);
+					var massLabel = "Mass: " + str(this.mass).substring(0,8) + " x 10^" + str(this.massPower) + " kg";
+					text(massLabel, width/2, height/2 + this.radius + 42);
+					
+				//}
 				
-				if(this.planetType === 0)
+				if(this.planetType === 0 || this.planetType == 4)
 				{
 					if (this.selected) {
 					stroke(255);
@@ -172,10 +201,10 @@ function Planet(par, id) {
 						noStroke();
 					}
 					fill(this.r, this.g, this.b, 50);
-					ellipse(width/2, height/2, this.radius*8, this.radius*8);
+					ellipse(width/2, height/2, this.radius*2, this.radius*2);
 					noStroke();
 					fill(this.r, this.g, this.b, 255);
-					ellipse(width/2, height/2, this.radius*5, this.radius*5);
+					ellipse(width/2, height/2, this.radius*1.2, this.radius*1.2);
 				}
 				else
 				{
@@ -190,16 +219,16 @@ function Planet(par, id) {
 					}
 					fill(this.r, this.g, this.b, 50);
 					var dR = random(-0.02,0.02);
-					ellipse(width/2, height/2, this.radius*8, this.radius*8);
+					ellipse(width/2, height/2, this.radius*2, this.radius*2);
 										
 					noStroke();
 					fill(this.r, this.g, this.b, 80);
-					ellipse(width/2, height/2, this.radius*(6 + dR*8), this.radius*(6 + dR*8));
+					ellipse(width/2, height/2, this.radius*(1.5 + dR*3), this.radius*(1.5 + dR*3));
 					
 					fill(this.r, this.g, this.b, 80);
-					ellipse(width/2, height/2, this.radius*(4 + dR*4), this.radius*(4 + dR*4));
+					ellipse(width/2, height/2, this.radius*(1.2 + dR), this.radius*(1.2 + dR));
 					fill(this.r, this.g, this.b, 255);
-					ellipse(width/2, height/2, this.radius*3, this.radius*3);
+					ellipse(width/2, height/2, this.radius*0.5, this.radius*0.5);
 					
 				}
 			
@@ -210,6 +239,11 @@ function Planet(par, id) {
 			}
 		}
 		
+		if(this.lastSelectedTimer >= 0)
+		{
+			this.lastSelectedTimer -= 0.01;
+		}
+		
 	}
 
 	this.select = function(cam)
@@ -218,13 +252,14 @@ function Planet(par, id) {
 		var my = (1/cam.scaleValue)*(mouseY) + cam.topBound;
 		if (mode == "Star System" &&abs(mx - this.pos.x) < this.radius && abs(my - this.pos.y) < this.radius) 
 		{
+			console.log(this.mass);
 			if(this.selected)
 			{
 				cam.setScale(width/(this.radius*15));
 			}
 			this.selected = true;
 		} 
-		else if (mode == "Planetary View" && abs(mx - width/2) < this.radius*4 && abs(my - height/2) < this.radius*4) 
+		else if (mode == "Planetary View" && abs(mx - width/2) < this.radius && abs(my - height/2) < this.radius) 
 		{
 			// if(this.selected)
 			// {
@@ -233,13 +268,17 @@ function Planet(par, id) {
 			this.selected = true;
 			targetCamPos = createVector(width/2, height/2);
 		} 
-		else
+		else if(this.lastSelectedTimer <= 0)
 		{
 			this.selected = false;
 		}
+		
+		
+		
 	}
 	this.setPlanetaryView = function()
 	{
+		console.log(this.moons.length);
 		for(var i = 0; i < this.moons.length; i++)
 		{
 			this.moons[i].setPlanetaryView();

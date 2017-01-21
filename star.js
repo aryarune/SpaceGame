@@ -2,7 +2,7 @@ function Star(pos)
 {
 	this.numLines = 0;
 	this.pos = pos;
-	this.radius = random(80, 600);
+	this.radius = random(80, 1200);
 	this.r = min(random(0, 250) * 7, 255);
 	this.g = min(random(0, 250) * 7, 255);
 	this.b = min(random(0, 250) * 7, 255);
@@ -14,6 +14,9 @@ function Star(pos)
 	this.name += int(random(2000));
 	this.sectorX = 0;
 	this.sectorY = 0;
+	this.planetSelection = new Menu(0, height-100, width, 100);
+	
+	
 	// randomSeed(this.pos.x * this.pos.y);
 	// var numPlanets = 10;//int(random(3, 21));
 	// for (var i = 0; i < numPlanets; i++) {
@@ -33,7 +36,7 @@ function Star(pos)
 			}
 			this.selected = true;
 		} 
-		else if (mode == "Star System" && abs(mx - width/2) < this.radius && abs(my - height/2) < this.radius) 
+		else if (mode == "Star System" && abs(mx - width/2) < this.radius/2 && abs(my - height/2) < this.radius/2) 
 		{
 			if(this.selected)
 			{
@@ -70,21 +73,26 @@ function Star(pos)
 					textAlign(CENTER);
 					text(this.name, width/2, height/2 + this.radius + 42);
 					
-					
+					//var massLabel = "Mass: " + str(this.mass).substring(0, 5) + " x 10^" + str(this.massPower) + " kg";
+					//text(massLabel, width/2, height/2 + this.radius*4 + 64);
 					
 				}
+				fill(this.r, this.g, this.b, 10);
+				noStroke();
+				ellipse(width/2, height/2, this.radius*50, this.radius*50);
+				
 				
 				fill(this.r, this.g, this.b, 15);
 				noStroke();
-				ellipse(width/2, height/2, this.radius*5, this.radius*5);
+				ellipse(width/2, height/2, this.radius*12, this.radius*12);
 				
 				fill(this.r, this.g, this.b, 20);
 				noStroke();
-				ellipse(width/2, height/2, this.radius*3, this.radius*3);
+				ellipse(width/2, height/2, this.radius*6, this.radius*6);
 				
 				fill(this.r, this.g, this.b, 40);
 				noStroke();
-				ellipse(width/2, height/2, this.radius*2.5, this.radius*2.5);
+				ellipse(width/2, height/2, this.radius*3, this.radius*3);
 				
 				fill(this.r, this.g, this.b, this.a);
 				if (this.selected) {
@@ -99,6 +107,8 @@ function Star(pos)
 			for (var i = 0; i < this.planets.length; i++) {
 				this.planets[i].show();
 			}
+			
+			this.planetSelection.show();
 		}
 		else if(mode == "Planetary View")
 		{
@@ -146,7 +156,7 @@ function Star(pos)
 				
 				fill(this.r, this.g, this.b, this.a);
 				
-				ellipse(this.pos.x, this.pos.y, this.radius*0.1, this.radius*0.1);
+				ellipse(this.pos.x, this.pos.y, this.radius*0.05, this.radius*0.05);
 				
 			}
 		}
@@ -156,13 +166,7 @@ function Star(pos)
 	this.checkSelected = function(cam) {
 		if(mode == "Star System")
 		{
-			if (width/2 > cam.leftBound - this.radius*2.5 && height/2 > cam.topBound - this.radius*2.5 && width/2 < cam.rightBound + this.radius*2.5 && height/2 < cam.bottomBound + this.radius*2.5) {
 				this.onScreen = true;
-			} 
-			else 
-			{
-				this.onScreen = false;
-			}
 		}
 		else if(mode == "Constellation View")
 		{
@@ -216,6 +220,7 @@ function Star(pos)
 					}
 				}
 				
+				this.planetSelection.buttons = [];
 				selectedPlanet.setPlanetaryView();
 				mainCamera.setScale(2);
 				mode = "Planetary View";
@@ -234,15 +239,91 @@ function Star(pos)
 	{
 		selectedPlanet = null;
 		this.planets = [];
-		mainCamera.setScale(0.5);
+		mainCamera.setScale(0.2);
 		targetCamPos.x = width/2 - width/2*mainCamera.scaleValue;
 		targetCamPos.y = height/2 - height/2*mainCamera.scaleValue;
 		randomSeed(this.pos.x * this.pos.y);
-		var numMoons = 10;//int(random(3, 21));
-		for (var i = 0; i < numMoons; i++) {
+		var numPlanets = int(random(3, 20));
+		console.log(numPlanets);
+		for (var i = 0; i < numPlanets; i++) {
 			var planet = new Planet(this, i);
 			this.planets.push(planet);
 		}
+		for(var i = 0; i < numPlanets; i++)
+		{
+			var planetButton = new Button((width/2) + (-(int(numPlanets/2) - i)*((width)/18)), this.planetSelection.pos.y+25, 50, 50, this);
+			planetButton.label = this.planets[i].name;
+			planetButton.listID = i;
+			planetButton.onClick = function()
+			{
+				this.par.planets[this.listID].selected = true;
+				this.par.planets[this.listID].lastSelectedTimer = 0.1;
+				this.par.selectedPlanet = this.par.planets[this.listID];
+			}
+			planetButton.show = function()
+			{
+				var p = this.par.planets[this.listID];
+				this.checkClick();
+				pop();
+				push();
+				rectMode(CORNER);
+				translate(0,0);
+				scale(1);
+				if(this.hovering)
+				{
+					fill(200, 200, 0, 255);
+				}
+				else
+				{
+					fill(200,200,200,255);
+				}
+				if(this.clicked)
+				{
+					fill(70);
+				}
+				
+				stroke(0, 0, 0, 200);
+				rect(this.pos.x, this.pos.y, this.w, this.h);
+				
+				ellipseMode(CENTER);
+				if(p.planetType == 1 || p.planetType == 4)
+				{
+					fill(p.r,p.g,p.b,100);
+					noStroke();
+					ellipse(this.pos.x + this.w/2, this.pos.y + this.h/2, min(p.radius/5, this.w-10), min(p.radius/5, this.h-10));
+					
+					fill(p.r,p.g,p.b,255);
+					noStroke();
+					ellipse(this.pos.x + this.w/2, this.pos.y + this.h/2, min(p.radius/8, this.w-15), min(p.radius/8, this.h-15));
+				}
+				else
+				{
+					fill(p.r,p.g,p.b,50);
+					noStroke();
+					ellipse(this.pos.x + this.w/2, this.pos.y + this.h/2, min(p.radius/4, this.w-5), min(p.radius/4, this.h-5));
+					
+					fill(p.r,p.g,p.b,80);
+					noStroke();
+					ellipse(this.pos.x + this.w/2, this.pos.y + this.h/2, min(p.radius/6, this.w-15), min(p.radius/6, this.h-15));
+					
+					fill(p.r,p.g,p.b,80);
+					noStroke();
+					ellipse(this.pos.x + this.w/2, this.pos.y + this.h/2, min(p.radius/8, this.w-15), min(p.radius/8, this.h-15));
+					
+					fill(p.r,p.g,p.b,255);
+					noStroke();
+					ellipse(this.pos.x + this.w/2, this.pos.y + this.h/2, min(p.radius/10, this.w-15), min(p.radius/10, this.h-15));
+				}
+				fill(255);
+				noStroke();
+				textSize(12);
+				textAlign(CENTER);
+				text(p.name, this.pos.x + this.w/2, this.pos.y + this.h + 10);
+				pop();
+			}
+			this.planetSelection.addButton(planetButton);
+		}
+		
 		
 		mode = "Star System";
 	}

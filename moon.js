@@ -2,7 +2,7 @@ function Moon(par, id)
 {
 	this.id = id;
 	this.par = par;
-	this.radius = min(par.radius / 12, random(1, 8));
+	this.radius = min(par.radius / 12, random(0.05, 8));
 	this.distance = this.par.radius + this.radius + 8 + id*3 + random(-1.0, 1.0);
 	this.orbitw = this.distance*1.6;
 	this.orbith = this.distance*1;
@@ -55,12 +55,12 @@ function Moon(par, id)
 		if(mode == "Star System")
 		{
 			fill(this.r, this.g, this.b, 100);
-			ellipse(this.pos.x, this.pos.y, this.radius*2, this.radius*2);
+			ellipse(this.pos.x, this.pos.y, this.radius, this.radius);
 		}
 		else if(mode == "Planetary View")
 		{
 			fill(this.r, this.g, this.b, 255);
-			ellipse(this.pos.x, this.pos.y, this.radius*8, this.radius*8);
+			ellipse(this.pos.x, this.pos.y, this.radius*2, this.radius*2);
 		}
 	}
 	

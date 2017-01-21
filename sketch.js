@@ -66,43 +66,73 @@ function keyPressed()
 }
 function pan()
 {
-	if(keyIsDown(65) && mainCamera.leftBound > -width*7.1)
+	if(mode == "Constellation View")
 	{
-		targetCamPos.x += 20;
-		//if(mode == "Constellation View")
-		//currentConstellation.updateConstellations("left");
+		if(keyIsDown(65) && mainCamera.leftBound > -width*7.1)
+		{
+			targetCamPos.x += 20;
+			//if(mode == "Constellation View")
+			//currentConstellation.updateConstellations("left");
+		}
+		else if(keyIsDown(68) && mainCamera.rightBound < width*8.1)
+		{
+			targetCamPos.x -= 20;
+			//if(mode == "Constellation View")
+			//currentConstellation.updateConstellations("right");
+		}
+		if(keyIsDown(87) && mainCamera.topBound > -height*7.1)
+		{
+			targetCamPos.y += 15;
+			//if(mode == "Constellation View")
+			//currentConstellation.updateConstellations("up");
+		}
+		else if(keyIsDown(83)  && mainCamera.bottomBound < height*8.1)
+		{
+			targetCamPos.y -= 15;
+			//if(mode == "Constellation View")
+			//currentConstellation.updateConstellations("down");
+		}
 	}
-	else if(keyIsDown(68) && mainCamera.rightBound < width*8.1)
+	else
 	{
-		targetCamPos.x -= 20;
-		//if(mode == "Constellation View")
-		//currentConstellation.updateConstellations("right");
+		if(keyIsDown(65) && mainCamera.leftBound > -width*50.1)
+		{
+			targetCamPos.x += 20;
+			//if(mode == "Constellation View")
+			//currentConstellation.updateConstellations("left");
+		}
+		else if(keyIsDown(68) && mainCamera.rightBound < width*50.1)
+		{
+			targetCamPos.x -= 20;
+			//if(mode == "Constellation View")
+			//currentConstellation.updateConstellations("right");
+		}
+		if(keyIsDown(87) && mainCamera.topBound > -height*50.1)
+		{
+			targetCamPos.y += 15;
+			//if(mode == "Constellation View")
+			//currentConstellation.updateConstellations("up");
+		}
+		else if(keyIsDown(83)  && mainCamera.bottomBound < height*50.1)
+		{
+			targetCamPos.y -= 15;
+			//if(mode == "Constellation View")
+			//currentConstellation.updateConstellations("down");
+		}
 	}
-	if(keyIsDown(87) && mainCamera.topBound > -height*7.1)
-	{
-		targetCamPos.y += 15;
-		//if(mode == "Constellation View")
-		//currentConstellation.updateConstellations("up");
-	}
-	else if(keyIsDown(83)  && mainCamera.bottomBound < height*8.1)
-	{
-		targetCamPos.y -= 15;
-		//if(mode == "Constellation View")
-		//currentConstellation.updateConstellations("down");
-	}
-	else if(keyIsDown(69))
+	if(keyIsDown(69))
 	{
 		mainCamera.setScale(min(mainCamera.scaleValue * 1.01, 3));
 		
 	}
 	else if(keyIsDown(81))
 	{
-		if(mode == "Constellation View")
-		{
-			mainCamera.setScale(max(mainCamera.scaleValue * 0.99, 0.334));
-		}
-		else
-			mainCamera.setScale(max(mainCamera.scaleValue * 0.99, 0.03));
+		//if(mode == "Constellation View")
+		//{
+		//	mainCamera.setScale(max(mainCamera.scaleValue * 0.99, 0.334));
+		//}
+		//else
+			mainCamera.setScale(max(mainCamera.scaleValue * 0.99, 0.001));
 	}
 	else if(keyIsDown(70))
 	{
@@ -153,12 +183,13 @@ function draw() {
   
   
  
-  nextShootingStar--;
+  nextShootingStar-= timeScale;
   if(nextShootingStar <= 0)
   {
+  	randomSeed(millis);
   	var star = new shootingStar(createVector(random(0, width), random(0, height)));
 	shootingStars.push(star);
-  	nextShootingStar = random(10, 1200);
+  	nextShootingStar = random(10, 500);
   }
   pop();
 }

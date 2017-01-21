@@ -2,7 +2,7 @@ function Constellation()
 {
 	this.stars = [];
 	this.lines = [];
-	var numStars = 200;
+	var numStars = 300;
 	this.starCount = 0;
 	this.pos = createVector(0, 0);
 	this.xSector = 0;

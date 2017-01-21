@@ -1,6 +1,7 @@
 function shootingStar(pos)
 {
 	this.pos = pos;
+	randomSeed(this.pos.x * this.pos.y);
 	this.r = random(200, 255);
 	this.g = random(0, 130);
 	this.b = random(0, 130);
