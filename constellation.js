@@ -12,6 +12,7 @@ function Constellation()
 	this.h = random(50,100);
 	this.selected = false;
 	this.onScreen = true;
+	this.visited = false;
 	
 	this.show = function()
 	{
@@ -29,7 +30,11 @@ function Constellation()
 			
 			if(this.onScreen)
 			{
-				fill(255,255,255, 10);
+				fill(255,255,255, 50);
+				if(this.visited)
+				{
+					fill(0,255,0,20);
+				}
 				noStroke();
 				if(this.selected)
 				{
@@ -38,13 +43,13 @@ function Constellation()
 				
 				rect(this.pos.x-this.w/2, this.pos.y-this.h/2, this.w,this.h, 30);
 				noStroke();
-				randomSeed(this.pos.x * this.pos.y);
+				/*randomSeed(this.pos.x * this.pos.y);
 				for(var i = 0; i < this.w/20 + this.h/20; i++)
 				{
 					fill(random(200,255), random(200,255), random(200,255), random(220,255));
 					var sizeOfStar = random(1,5);
 					ellipse(random(this.pos.x-this.w/2,this.pos.x+this.w/2), random(this.pos.y-this.h/2,this.pos.y+this.h/2), sizeOfStar, sizeOfStar);
-				}
+				}*/
 			}
 			
 		}

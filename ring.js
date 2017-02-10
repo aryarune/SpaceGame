@@ -24,7 +24,7 @@ function Ring(par)
 		else if(mode == "Planetary View")
 		{
 			strokeWeight(4);
-			ellipse(width/2,height/2, this.w*4, this.h*4);
+			ellipse(width/2,height/2, this.w, this.h);
 			//this.angle += radians(this.speed);
 			//this.angle = this.angle % radians(360);
 		}

@@ -11,6 +11,8 @@ var camSize;
 var mainCamera;
 var timeSlider;
 var timeScale;
+var visitedClusters = [];
+
 
 var letters = [];
 
@@ -25,7 +27,7 @@ function setup()
 	nextShootingStar = random(10, 20);
 	mode = "Constellation View";
 	currentGalaxy = new Galaxy();
-	currentGalaxy.generateClusters();
+	//currentGalaxy.generateClusters();
 	mode = "Galaxy View";
 	//timeSlider = createSlider(0, 4, 0.5, 0.05);
 	

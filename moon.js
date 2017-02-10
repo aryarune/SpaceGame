@@ -34,16 +34,16 @@ function Moon(par, id)
 	
 	this.setPlanetaryView = function()
 	{
-		this.orbitw = this.distance*4.8;
-		this.orbith = this.distance*2.4;
+		this.orbitw = this.distance*1.6;
+		this.orbith = this.distance*1;
 		if(this.orbitw > this.orbith)
 		{
-			this.focusDelta = this.orbitw * 1.6;
+			this.focusDelta = this.orbitw * 0.4;
 			this.focus.x += this.focusDelta;
 		}
 		else
 		{
-			this.focusDelta = this.orbith * 1.6;
+			this.focusDelta = this.orbith * 0.4;
 			this.focus.y += this.focusDelta;
 		}
 	}
@@ -60,7 +60,7 @@ function Moon(par, id)
 		else if(mode == "Planetary View")
 		{
 			fill(this.r, this.g, this.b, 255);
-			ellipse(this.pos.x, this.pos.y, this.radius*2, this.radius*2);
+			ellipse(this.pos.x, this.pos.y, this.radius, this.radius);
 		}
 	}
 	
@@ -82,17 +82,17 @@ function Moon(par, id)
 		}
 		else if(mode == "Planetary View")
 		{
-			multiplier = 4;
+			multiplier = 1;
 			this.focus.x = width/2;
-			this.focus.y = width/2;
+			this.focus.y = height/2;
 			if(this.orbitw > this.orbith)
 			{
-				this.focusDelta = this.orbitw * 1.2;
+				this.focusDelta = this.orbitw * 0.4;
 				this.focus.x += this.focusDelta;
 			}
 			else
 			{
-				this.focusDelta = this.orbith * 1.2;
+				this.focusDelta = this.orbith * 0.4;
 				this.focus.y += this.focusDelta;
 			}
 		}
