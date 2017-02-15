@@ -18,7 +18,7 @@ var letters = [];
 
 function setup()
 {
-	//randomSeed(5);//second());
+	randomSeed(5);
 	
   	createCanvas(1024, 768);
   	

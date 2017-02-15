@@ -9,6 +9,7 @@ function Galaxy()
 	{
 		if(!generatingClusters)
 		{
+			mainCamera.setScale(0.1);
 			generatingClusters = true;
 			this.clusters = [];
 			
@@ -16,6 +17,7 @@ function Galaxy()
 		}
 		while(true)
 		{
+			randomSeed(this.pos.x * this.pos.y + this.numClusters);
 			var total = 0;
 			
 			for(var i = 0; i < 100; i++)
@@ -23,7 +25,7 @@ function Galaxy()
 				var c = new Constellation();
 				var isFree = false;
 				var tries = 0;
-				while(!isFree && tries < 3)
+				while(!isFree && tries < 2)
 				{
 					c.pos.x = random(-width*24, width*24);
 					c.pos.y = random(-height*24, height*24);
@@ -56,7 +58,7 @@ function Galaxy()
 					this.numClusters++;
 				}
 			}
-			console.log(total);
+		//	console.log(total);
 			yield;
 		}
 	}
@@ -141,7 +143,7 @@ function Galaxy()
 				{
 					visitedClusters.push(this.selectedCluster.pos);
 				}
-				mainCamera.setScale(0.5);
+				mainCamera.setScale(0.2);
 				
 				targetCamPos.x = width/2 - width/2*mainCamera.scaleValue;
 				targetCamPos.y = height/2 - height/2*mainCamera.scaleValue;
@@ -158,14 +160,16 @@ function Galaxy()
 			}	
 			else if(mode == "Constellation View" && code == 32)
 			{
-				mainCamera.setScale(0.5);
+				mainCamera.setScale(0.05);
 				targetCamPos.x = width/2 - width/2*mainCamera.scaleValue;
 				targetCamPos.y = height/2 - height/2*mainCamera.scaleValue;
 				
 				this.clusters = [];
 				this.numClusters = 0;
+				randomSeed(this.pos.x * this.pos.y);
+				this.generatingClusters = true;
 				this.generateClusters();
-				if(visitedClusters.length > 0)
+			/*	if(visitedClusters.length > 0)
 				{
 					var vCluster = null;
 					for(var i = 0; i < this.clusters.length; i++)
@@ -189,7 +193,7 @@ function Galaxy()
 						console.log("visited cluster at: " + str(visitedClusters[i].x) + ", " + str(visitedClusters[i].y));
 					}
 				}
-				
+			*/	
 				mode = "Galaxy View";
 			}
 			else

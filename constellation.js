@@ -2,8 +2,9 @@ function Constellation()
 {
 	this.stars = [];
 	this.lines = [];
-	var numStars = 300;
+	var numStars = 100;
 	this.starCount = 0;
+	this.targetStarCount = 3500;
 	this.pos = createVector(0, 0);
 	this.xSector = 0;
 	this.ySector = 0;
@@ -13,6 +14,11 @@ function Constellation()
 	this.selected = false;
 	this.onScreen = true;
 	this.visited = false;
+	
+	
+	var currentLinesI = 0;
+	var boundSize = 10;
+	
 	
 	this.show = function()
 	{
@@ -30,7 +36,7 @@ function Constellation()
 			
 			if(this.onScreen)
 			{
-				fill(255,255,255, 50);
+				fill(255,255,255, 100);
 				if(this.visited)
 				{
 					fill(0,255,0,20);
@@ -55,11 +61,24 @@ function Constellation()
 		}
 		if(mode == "Constellation View")
 		{
-			stroke(255, 255, 255, 100);
-			strokeWeight(2);
-			for(var i = 0; i < this.lines.length; i++)
+			if(this.starCount < this.targetStarCount)
 			{
-				line(this.lines[i].x1, this.lines[i].y1, this.lines[i].x2, this.lines[i].y2);
+				this.loadingScreen().next();
+				this.generate().next();
+			}
+			else if(currentLinesI < this.starCount-1)
+			{
+				this.loadingScreen().next();
+				this.generateLines().next();
+			}
+			else
+			{
+				stroke(255, 255, 255, 100);
+				strokeWeight(2);
+				for(var i = 0; i < this.lines.length; i++)
+				{
+					line(this.lines[i].x1, this.lines[i].y1, this.lines[i].x2, this.lines[i].y2);
+				}	
 			}
 		}
 		if(mode == "Constellation View" || mode == "Star System" || mode == "Planetary View")
@@ -67,7 +86,8 @@ function Constellation()
 			
 			for(var i = 0; i < this.stars.length; i++)
 			{
-				this.stars[i].show();
+				if(mode != "Constellation View" || (this.starCount > this.targetStarCount && currentLinesI >= this.starCount-1))
+					this.stars[i].show();
 				if(mode == "Constellation View" && this.stars[i].checkSelected(mainCamera))
 			  	{
 			  		targetCamPos.x = width/2 - this.stars[i].pos.x*mainCamera.scaleValue;
@@ -149,11 +169,7 @@ function Constellation()
 					selectedStar.setStarSystemView();
 				}
 			}
-			else if(code == 32)
-			{
-				
-				
-			}
+		
 			
 		}
 		else if(code == 32 && mode == "Star System")
@@ -177,111 +193,149 @@ function Constellation()
 		
 	}
 	
-	
-	
-	this.generateSector = function(xS, yS)
+	this.generate = function*()
 	{
-		randomSeed((this.pos.x + xS) * (this.pos.y + yS));
-		for(var i = 0; i < numStars; i++)
+		while(true)
 		{
-			var newPos = createVector(random(-2 * width + (5 * width * xS), 3*width+ 5*width*xS), random(-2 * height + (5 * height * yS), 3*height+ 5*height*yS));
-			var tries = 1;
-			var isFree = false;
-			while(!isFree && tries < 2)
+			randomSeed(this.pos.x * this.pos.y + this.starCount);
+			for(var i = 0; i < numStars; i++)
 			{
-				isFree = true;
-				for(var j = 0; j < this.stars.length; j++)
+				var divisor = 2;
+				var newPos = createVector(random(-width*(boundSize/divisor), width*(boundSize/divisor)), random(-width*(boundSize/divisor), width*(boundSize/divisor)));
+				var tries = 1;
+				var isFree = false;
+				while(!isFree && tries <= 2)
 				{
-					if(p5.Vector.dist(this.stars[j].pos, newPos) < 100)
+					isFree = true;
+					for(var j = 0; j < this.stars.length; j++)
 					{
-						isFree = false;
+						if(p5.Vector.dist(this.stars[j].pos, newPos) < 150)
+						{
+							isFree = false;
+						}
+					}
+					
+					
+					if(!isFree)
+					{
+						tries++;
+						divisor--;
+						newPos = createVector(random(-width*(boundSize/divisor), width*(boundSize/divisor)), random(-height*(boundSize/divisor), height*(boundSize/divisor)));
 					}
 				}
-				
-				
-				if(!isFree)
+				if(isFree)
 				{
-					tries++;
-					newPos = createVector(random(-2 * width + (5 * width * xS), 3*width+ 5*width*xS), random(-2 * height + (5 * height * yS), 3*height+ 5*height*yS));
+					var s = new Star(newPos);
+				//	s.sectorX = int(xS);
+				//	s.sectorY = int(yS);
+					this.starCount++;
+					this.stars.push(s);
 				}
 			}
-			if(isFree)
+			if(this.starCount > this.targetStarCount)
 			{
-				var s = new Star(newPos);
-				s.sectorX = int(xS);
-				s.sectorY = int(yS);
-				this.starCount++;
-				this.stars.push(s);
+				console.log(this.starCount + " Stars");
+				currentLinesI = 0;
 			}
+			yield;
 		}
-		
-		
 	}
+	
+	
+	var lastStarCount = this.starCount;
+	this.loadingScreen = function*()
+	{
+		var lights = [];
+		randomSeed(this.pos.x * this.pos.y);
+		for(var i = 0; i < 100; i++)
+		{
+			lights.push(createVector(random(width/3,2*width/3), random(height/3,2*height/3)));
+		}
+		var center = createVector(width/2,height/2);
+		//randomSeed(millis);
+		while(true)
+		{
+			pop();
+			push();
+			
+			stroke(255);
+			for(var i = 0; i < lights.length; i++)
+			{
+				var moveVector = p5.Vector.sub(lights[i], center);
+				moveVector.normalize();
+				var k = map(this.starCount + (10*currentLinesI), 0, 1200, 0, width/2) % random(width/4, width/2); //* random(0.5,2.2);
+				var kk = map(lastStarCount, 0 ,1200, 0, width/2) % random(width/4, width/2); //* random(0.5,2.2);
+				moveVector.mult(kk);
+				lights[i] = p5.Vector.add(lights[i], moveVector);
+				moveVector.normalize();
+				moveVector.mult(k);
+				var final = p5.Vector.add(lights[i], moveVector);
+				line(lights[i].x,lights[i].y, final.x, final.y);
+				lastStarCount = this.starCount + (10*currentLinesI);
+			}
+			pop();
+			randomSeed(millis());
+			yield;
+		}
+	}
+	
 	this.setConstellationView = function()
 	{
 		this.stars = [];
 		this.lines = [];
-		this.generateSector(0,0); //center
-		this.generateSector(-1,0); //center-left1
-		this.generateSector(1,0); //center-right1
+		this.starCount = 0;
 		
-		this.generateSector(0,1); //down1-center
-		this.generateSector(-1,1); //down1-left1
-		this.generateSector(1,1); //down1-right1
-		
-		this.generateSector(0,-1); //up1-center
-		this.generateSector(-1,-1); //up1-left1
-		this.generateSector(1,-1); //up1-right1
-		console.log(this.starCount + " Stars");
-		
-		this.generateLines();
 	}
-	this.generateLines = function()
+	this.generateLines = function*()
 	{
-		
-		this.lines = [];
-		for(var i = 0; i < this.stars.length; i++)
+		while(currentLinesI < this.starCount-1)
 		{
-			var hasConnection = false;
-			for(var j = 0; j < this.stars.length; j++)
+			var currentLinesMax = min(currentLinesI + 30, this.starCount-1); 
+			for(currentLinesI; currentLinesI < currentLinesMax; currentLinesI++)
 			{
-				if(j != i)
+				//console.log("CurrentLinesI: " + str(currentLinesI));
+				var hasConnection = false;
+				for(var j = 0; j < this.stars.length; j++)
 				{
-					if(this.stars[i].numLines < 2 && this.stars[j].numLines < 2 && dist(this.stars[i].pos.x, this.stars[i].pos.y, this.stars[j].pos.x, this.stars[j].pos.y) < 300)
+					if(j != currentLinesI)
 					{
-						var l = new Line(this.stars[i].pos.x, this.stars[i].pos.y, this.stars[j].pos.x, this.stars[j].pos.y);
+						if(this.stars[currentLinesI].numLines < 2 && this.stars[j].numLines < 2 && dist(this.stars[currentLinesI].pos.x, this.stars[currentLinesI].pos.y, this.stars[j].pos.x, this.stars[j].pos.y) < 300)
+						{
+							var l = new Line(this.stars[currentLinesI].pos.x, this.stars[currentLinesI].pos.y, this.stars[j].pos.x, this.stars[j].pos.y);
+							this.lines.push(l);
+							this.stars[currentLinesI].numLines++;
+							this.stars[j].numLines++;
+							hasConnection = true;
+						}
+					}
+				}
+				if(!hasConnection)
+				{
+					var minDist = 10000;
+					var closestI = -1;
+					for(var j = 0; j < this.stars.length; j++)
+					{
+						if(j != currentLinesI)
+						{
+							var d = dist(this.stars[currentLinesI].pos.x, this.stars[currentLinesI].pos.y, this.stars[j].pos.x, this.stars[j].pos.y)
+							if(d < minDist)
+							{
+								closestI = j;
+								minDist = d;
+							}
+						}
+					}
+					if(closestI != -1)
+					{
+						var l = new Line(this.stars[currentLinesI].pos.x, this.stars[currentLinesI].pos.y, this.stars[closestI].pos.x, this.stars[closestI].pos.y);
 						this.lines.push(l);
-						this.stars[i].numLines++;
-						this.stars[j].numLines++;
+						this.stars[currentLinesI].numLines++;
+						this.stars[closestI].numLines++;
 						hasConnection = true;
 					}
 				}
 			}
-			if(!hasConnection)
-			{
-				var minDist = 10000;
-				var closestI = -1;
-				for(var j = 0; j < this.stars.length; j++)
-				{
-					if(j != i)
-					{
-						var d = dist(this.stars[i].pos.x, this.stars[i].pos.y, this.stars[j].pos.x, this.stars[j].pos.y)
-						if(d < minDist)
-						{
-							closestI = j;
-							minDist = d;
-						}
-					}
-				}
-				if(closestI != -1)
-				{
-					var l = new Line(this.stars[i].pos.x, this.stars[i].pos.y, this.stars[closestI].pos.x, this.stars[closestI].pos.y);
-					this.lines.push(l);
-					this.stars[i].numLines++;
-					this.stars[closestI].numLines++;
-					hasConnection = true;
-				}
-			}
+			yield;
 		}
 	}
 }
