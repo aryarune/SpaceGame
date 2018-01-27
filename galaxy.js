@@ -2,6 +2,7 @@ function Galaxy()
 {
 	this.pos = createVector(random(width), random(height));
 	this.clusters = [];
+	this.visitedClusters = [];
 	this.numClusters = 0;
 	var generatingClusters = false;
 	this.selectedCluster = null;
@@ -52,7 +53,11 @@ function Galaxy()
 				}
 				if(isFree)
 				{
-					
+					c.id = this.numClusters;
+					if(this.visitedClusters.indexOf(c.id) != -1)
+					{
+					  c.visited = true;
+					}
 					this.clusters.push(c);
 					total++;
 					this.numClusters++;
@@ -102,7 +107,7 @@ function Galaxy()
 	
 	this.show = function()
 	{
-		if(this.numClusters < 5000)
+		if(this.numClusters < 2000)
 		{
 			this.generateClusters().next();
 			this.loadingScreen().next();
@@ -125,24 +130,18 @@ function Galaxy()
 	}
 	this.keyInput = function(code)
 	{
-		if(this.selectedCluster != null)
+		if(this.selectedCluster !== null)
 		{
 			
-			if(mode == "Galaxy View" && code == 13)
+			if(mode == "Galaxy View" && code == 13) //enter constellation view from galaxy view
 			{
-				var hasVisited = false;
-				for(var i = 0; i < visitedClusters.length; i++)
+			  
+				this.selectedCluster.visited = true; //set cluster visited
+				if(this.visitedClusters.indexOf(this.selectedCluster.id) == -1) //add cluster to array of visited cluster if it isn't already there
 				{
-					if(visitedClusters[i].x == this.selectedCluster.pos.x && visitedClusters[i].y == this.selectedCluster.pos.y)
-					{
-						hasVisited = true;
-						break;
-					}
+				  this.visitedClusters.push(this.selectedCluster.id);
 				}
-				if(!hasVisited)
-				{
-					visitedClusters.push(this.selectedCluster.pos);
-				}
+				
 				mainCamera.setScale(0.2);
 				
 				targetCamPos.x = width/2 - width/2*mainCamera.scaleValue;
@@ -158,7 +157,7 @@ function Galaxy()
 				}
 				
 			}	
-			else if(mode == "Constellation View" && code == 32)
+			else if(mode == "Constellation View" && code == 32) //leave constellation view and come back to galaxy view
 			{
 				mainCamera.setScale(0.05);
 				targetCamPos.x = width/2 - width/2*mainCamera.scaleValue;
@@ -169,31 +168,7 @@ function Galaxy()
 				randomSeed(this.pos.x * this.pos.y);
 				this.generatingClusters = true;
 				this.generateClusters();
-			/*	if(visitedClusters.length > 0)
-				{
-					var vCluster = null;
-					for(var i = 0; i < this.clusters.length; i++)
-					{
-						if(visitedClusters[visitedClusters.length-1].x == this.clusters[i].pos.x && visitedClusters[visitedClusters.length-1].y == this.clusters[i].pos.y)
-						{
-							vCluster = this.clusters[i];
-							break;
-						}
-					}
-					if(vCluster != null)
-					{
-						vCluster.selected = true;
-						this.selectedCluster = vCluster;
-						targetCamPos.x = width/2 - vCluster.pos.x*mainCamera.scaleValue;
-						targetCamPos.y = height/2 - vCluster.pos.y*mainCamera.scaleValue;
-						
-					}
-					for(var i = 0; i < visitedClusters.length; i++)
-					{
-						console.log("visited cluster at: " + str(visitedClusters[i].x) + ", " + str(visitedClusters[i].y));
-					}
-				}
-			*/	
+		
 				mode = "Galaxy View";
 			}
 			else

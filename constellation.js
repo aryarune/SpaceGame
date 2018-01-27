@@ -2,9 +2,10 @@ function Constellation()
 {
 	this.stars = [];
 	this.lines = [];
+	this.id = 0;
 	var numStars = 100;
 	this.starCount = 0;
-	this.targetStarCount = 3500;
+	this.targetStarCount = 1000;
 	this.pos = createVector(0, 0);
 	this.xSector = 0;
 	this.ySector = 0;
@@ -39,7 +40,7 @@ function Constellation()
 				fill(255,255,255, 100);
 				if(this.visited)
 				{
-					fill(0,255,0,20);
+					fill(0,255,0,120);
 				}
 				noStroke();
 				if(this.selected)
