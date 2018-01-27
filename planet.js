@@ -1,7 +1,7 @@
 function Planet(par, id) {
 	this.par = par;
 	this.id = id;
-	this.radius = min(this.par.radius - 10, random(18, 100));
+	this.radius = min(this.par.radius - 10, random(18, 60));
 	this.distance = this.par.radius*2.5 + this.radius + (800 * (id+1)) + random(130, 300);
 	this.orbitw = this.distance*1.8;
 	this.orbith = this.distance*1.2;
@@ -26,6 +26,9 @@ function Planet(par, id) {
 	{
 		this.moonDirection = 1;
 	}
+	
+	
+	
 	this.density = random(20000,40000) - this.distance;
 	this.planetType = int(random(5)) //0 = rocky with atmosphere, 1 = gas planet with no rings, 2 = gas planet with rings, 3 = gas giant, 4 = dwarf planet
 	if(this.planetType == 0 || this.planetType == 4)
@@ -57,21 +60,31 @@ function Planet(par, id) {
 			this.g = random(0,50);
 			this.b = random(150,200);
 		}
-		
+		if(this.planetType == 1)
+		{
+		  this.density /= 2;
+		}
 		if(this.planetType == 2)
 		{
+		  this.density /= 2;
 			this.hasRing = true;
 			this.ring = new Ring(this);
 		}
 		if(this.planetType == 3)
 		{
+		  this.density /= 2;
 			this.radius = min(this.radius * random(5,10), this.par.radius/5);
 		}
 		if(this.planetType == 4)
 		{
+		  
 			this.radius = max(this.radius / random(15.0,20.0), 2);
 		}
 	}
+	this.surfaceRadius = (pow(this.radius,2) + 1000) * 1.6;
+	this.volume = 4/3 * 3.1415 * pow(this.surfaceRadius,3);
+	this.mass = this.volume * this.density / pow(10,24);
+	
 	this.name = "";
 	this.name += "P";
 	this.name += id;
@@ -97,11 +110,9 @@ function Planet(par, id) {
 	{
 		this.name+="r";
 	}
-	var volume = 4/3 * 3.1415 * pow(this.radius*80000,3);
-	this.mass = volume * this.density / pow(10,24);
 	
 
-	var numMoons = int(random(0, 40));
+	var numMoons = int(random(0, 20));
 	for (var i = 0; i < numMoons; i++) {
 		var moon = new Moon(this,i);
 		this.moons.push(moon);
@@ -190,7 +201,8 @@ function Planet(par, id) {
 					text(this.name, width/2, height/2 + this.radius + 22);
 					var massLabel = "Mass: " + str(this.mass).substring(0,8) + " x 10^" + str(this.massPower) + " kg";
 					text(massLabel, width/2, height/2 + this.radius + 42);
-					
+					var radiusLabel = "Radius: " + this.surfaceRadius.toFixed(3) + "km";
+					text(radiusLabel, width/2, height/2 + this.radius + 62);
 				//}
 				
 				if(this.planetType === 0 || this.planetType == 4)
